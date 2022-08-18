@@ -15,6 +15,7 @@ import ProxyWorker from './middleware/proxy/worker.js';
 import HTTP_RESPONSE from './core/enum/httpResponse.js';
 import e from 'express';
 import JwtHandler from './middleware/auth/jwtHandler.js';
+import FileTransferConfigReader from './core/fileTransferReader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,7 @@ app.use(express.json());
 
 
 let apiConfigReader = new ApiConfigReader();
+let ftpConfigReader = new FileTransferConfigReader();
 let modelConfigReader = new ModelConfigReader();
 let baseConfigReader = new ConfigReader();
 let jwtObject = baseConfigReader.getConfig().jwt;
@@ -45,22 +47,33 @@ baseConfigReader.setConfigReaders();
 baseConfigReader.printConfigs();
 modelConfigReader.printConfigs();
 apiConfigReader.printConfigs();
-
+ftpConfigReader.printConfigs();
 
 let proxyWorker = new ProxyWorker(
     ["start", "end"],
-    `Job Name`,
+    `Rest API Model Check`,
     apiConfigReader.modelCheck,
     [],
     1
 );
 
-proxyWorker.doTask();
+await proxyWorker.doTask();
 
-console.log(jwtObject);
+proxyWorker = new ProxyWorker(
+    ["start", "end"],
+    `FTP Model Check`,
+    ftpConfigReader.modelCheck,
+    [],
+    1
+)
 
-//API 처리를 위한 HTTP URI 설정
+await proxyWorker.doTask();
+
+//API 처리를 위한 HTTP Router 설정
 apiConfigReader.setRouter(app);
+
+//FTP 처리를 위한 HTTP Router 설정
+ftpConfigReader.setRouter(app);
 
 let dba = new DBAccessor();
 
@@ -81,7 +94,6 @@ dba.delete('test2', {
 if(jwtObject.use){
     app.post(jwtObject['generate-uri'], async (req, res) => {
         let body = req.body;
-        console.log(body);
         let result = await dba.jwtAuthorize(
             jwtObject['auth-table'],
             jwtObject['auth-columns'],

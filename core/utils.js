@@ -55,7 +55,16 @@ const hmac256 = (data, secret) => {
     return hmac.read().toString('base64url');
 }
 
+const hash_md5 = (message) => {
+    return crypto.createHash('md5').update(message).digest('hex');
+}
+
+const hash_sha256 = (message) => {
+    return crypto.createHash('sha256').update(message).digest('hex');
+}
+
 export {
     getUTCTime, arrayToObject, arrayToMap, objectKeysToArray, objectValuesToArray,
-    stringToBase64, base64ToString, stringToBase64UrlSafe, base64UrlSafeToString, hmac256
+    stringToBase64, base64ToString, stringToBase64UrlSafe, base64UrlSafeToString,
+    hmac256, hash_md5, hash_sha256
 };

@@ -2,12 +2,13 @@ import InappropriateConfigKeyException from '../exception/inappropriateConfigKey
 import OutofConfigKeyException from '../exception/outofConfigKeyException.js';
 
 import ApiReader from './apiReader.js';
+import FtpReader from './fileTransferReader.js';
 import generalInfo from '../configs/default.json' assert {type: "json"};
 import apiType from './enum/apiType.js';
 
 
 const controlList = [
-    "restapi", "database", "jwt"
+    "restapi", "database", "jwt", "ftp"
 ]
 
 const properties = [
@@ -27,6 +28,11 @@ const properties = [
         'alg',
         'columns',
         'keys'
+    ],
+    [
+        "use",
+        "base-uri",
+        "path-encoding"
     ]
 ]
 
@@ -46,6 +52,7 @@ export default class ConfigReader{
 
     setConfigReaders(){
         this.configInfo.set(apiType.REST, new ApiReader());
+        this.configInfo.set(apiType.FTP, new FtpReader());
     }
 
     readGeneralInfo() {

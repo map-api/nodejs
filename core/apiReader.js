@@ -54,7 +54,12 @@ export default class ApiConfigReader{
                 jsonData.dml
             );
             
-            // uri나 id가 @포함하고 있는지 검사할 것
+            if(oneObject.data.uri.includes('@') || oneObject.data.id.includes ('@')){
+                console.warn(`Attribute [uri] and [id] must not include '@' word.`);
+                console.warn(`The configId ${oneObject.data.uri} + '@' + ${oneObject.data.id} will not be registered.`);
+                return;
+            }
+
             let configId = oneObject.data.uri + '@' + oneObject.data.id;
             if(this.configInfo.get(configId)){
                 console.warn(`API Config is duplicated. The new config ${configId} will be set.`); 
@@ -263,13 +268,13 @@ export default class ApiConfigReader{
             let oneObject = _configInfo.get(_key);
             let modelId = oneObject.data.model;
             let model = new ModelConfigReader().getConfig(modelId);
-            console.log(`${modelId} checking...`);
+            console.log(`Model [${modelId}] checking...`);
             if(!model){
                 throw new NoModelFoundException(
                     `No Model is Found for API Config -> ${modelId}`
                 );
             }
-            console.log(`${modelId} Ok!`);
+            console.log(`Model [${modelId}] Ok!`);
         }
     }
 
