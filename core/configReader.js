@@ -8,7 +8,7 @@ import apiType from './enum/apiType.js';
 
 
 const controlList = [
-    "restapi", "database", "jwt", "ftp"
+    "cors", "restapi", "database", "jwt", "ftp"
 ]
 
 const properties = [
@@ -63,7 +63,7 @@ export default class ConfigReader{
     checkControlSetting(json){
         let i_list = [controlList];
 
-        for(let i = 0; i < i_list.length; i++){
+        for(let i = 1; i < i_list.length; i++){
             let current_object = i_list[i];
 
             for(let index in current_object){

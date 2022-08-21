@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 //import homeRouter from './routes/home/index.js';
 var app = express();
@@ -16,6 +17,7 @@ import HTTP_RESPONSE from './core/enum/httpResponse.js';
 import e from 'express';
 import JwtHandler from './middleware/auth/jwtHandler.js';
 import FileTransferConfigReader from './core/fileTransferReader.js';
+import API_TYPE from './core/enum/apiType.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +93,25 @@ dba.delete('test2', {
 });
 */
 
+
+const corsList = baseConfigReader.getConfig()[API_TYPE.CORS]
+
+if(corsList.length === 1 && corsList[0] === '*'){
+    app.use(cors());
+} else {
+    const corsOptions = {
+        origin: function(origin, callback){
+            if(corsList.indexOf(origin) !== -1){
+                callback(null, true);
+            } else {
+                callback(new Error("Not Allowed Origin"));
+            }
+        }
+    };
+    
+    app.use(cors(corsOptions));
+}
+
 if(jwtObject.use){
     app.post(jwtObject['generate-uri'], async (req, res) => {
         let body = req.body;
@@ -153,7 +174,9 @@ if(jwtObject.use){
     });
 }
 app.all('*', (req, res) => {
-	res.status(404).send("<h1>ERROR - 페이지를 찾을 수 없습니다.</h1>");
+    const _cip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log(`${_cip} requested unkonwn page [${req.url}]`);
+	return res.status(404).send("<h1>ERROR - 페이지를 찾을 수 없습니다.</h1>");
 });
 
 export default app

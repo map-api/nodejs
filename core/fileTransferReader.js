@@ -67,7 +67,133 @@ export default class FileTransferConfigReader{
     };
 
     setRouter(app){
+        /*
+        let URIs = this.configInfo.keys();
+        let uri;
+        let baseConfig = ConfigReader.instance.getConfig();
+        let baseUri = (baseConfig[API_TYPE.REST])['base-uri'];
+        baseUri = (baseUri === '/' ? '' : baseUri);
+        while( (uri = URIs.next().value) ){
+            let rawUri = uri.toString().split('@');
+            let _uri = baseUri + rawUri[0] + '/' + rawUri[1];
+            let _configInfo = this.configInfo.get(uri);
+         //
+            BEFORE PROXY
+            
+            let apiResponser = new ApiResponser(_configInfo);
+            return apiResponser.get(req, res, next);         
+        //
+            
+            if(_configInfo.data.dml.indexOf('insert') !== -1){
+                base_app.post(
+                    _uri,
+                    async function(req, res, next){
+                        const _cip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
+                        let apiResponser = new ApiResponser(_configInfo);
+                        let proxyWorker = new ProxyWorker(
+                            _configInfo.data.proxyList,
+                            `API Worker - [POST]${_configInfo.data.uri}@${_configInfo.data.id}(${_cip})`,
+                            apiResponser.post,
+                            [true, apiResponser, req, res, next],
+                            _configInfo.data.proxyOrder
+                        );
+                        
+                        let result = await proxyWorker.doTask(req, res);
+                        if(!result || !result.code){
+                            result = {
+                                code: 500,
+                                message: HTTP_RESPONSE[500]
+                            };
+                        }                                                        
+//                        return result;
+                        return res.status(result.code).json(result);    
+                    }
+                );
+            }
+
+            if(_configInfo.data.dml.indexOf('update') !== -1){
+                base_app.put(
+                    _uri,
+                    async function(req, res, next){
+                        const _cip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+                        let apiResponser = new ApiResponser(_configInfo);
+                        let proxyWorker = new ProxyWorker(
+                            _configInfo.data.proxyList,
+                            `API Worker - [PUT]${_configInfo.data.uri}@${_configInfo.data.id}(${_cip})`,
+                            apiResponser.put,
+                            [true, apiResponser, req, res, next],
+                            _configInfo.data.proxyOrder
+                        );
+                        
+                        let result = await proxyWorker.doTask(req, res);
+                        if(!result || !result.code){
+                            result = {
+                                code: 500,
+                                message: HTTP_RESPONSE[500]
+                            };
+                        }                                                        
+//                        return result;
+                        return res.status(result.code).json(result);
+                    }
+                )
+                base_app.put(
+                    _uri + '/*',
+                    async function(req, res, next){
+                        const _cip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+                        let apiResponser = new ApiResponser(_configInfo);
+                        let proxyWorker = new ProxyWorker(
+                            _configInfo.data.proxyList,
+                            `API Worker - [PUT]${_configInfo.data.uri}@${_configInfo.data.id}(${_cip})`,
+                            apiResponser.put,
+                            [true, apiResponser, req, res, next],
+                            _configInfo.data.proxyOrder
+                        );
+                        
+                        let result = await proxyWorker.doTask(req, res);
+                        if(!result || !result.code){
+                            result = {
+                                code: 500,
+                                message: HTTP_RESPONSE[500]
+                            };
+                        }                                                        
+//                        return result;
+                        return res.status(result.code).json(result);         
+                    }
+                );
+            }
+
+            if(_configInfo.data.dml.indexOf('delete') !== -1){
+                base_app.delete(
+                    _uri,
+                    async function(req, res, next){
+                        const _cip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+                        let apiResponser = new ApiResponser(_configInfo);
+                        let proxyWorker = new ProxyWorker(
+                            _configInfo.data.proxyList,
+                            `API Worker - [DELETE]${_configInfo.data.uri}@${_configInfo.data.id}(${_cip})`,
+                            apiResponser.delete,
+                            [true, apiResponser, req, res, next],
+                            _configInfo.data.proxyOrder
+                        );
+                        
+                        let result = await proxyWorker.doTask(req, res);
+                        if(!result || !result.code){
+                            result = {
+                                code: 500,
+                                message: HTTP_RESPONSE[500]
+                            };
+                        }                                                        
+//                        return result;
+                        return res.status(result.code).json(result);          
+                    }
+                );
+            }
+        }
+        */
     }
 
     modelCheck(){

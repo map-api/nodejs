@@ -1,4 +1,5 @@
 const API_TYPE = {
+    CORS: "cors",
     GENERAL: "general",
     REST: "restapi",
     FTP: "fileTransfer",
