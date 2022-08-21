@@ -96,7 +96,7 @@ dba.delete('test2', {
 
 const corsList = baseConfigReader.getConfig()[API_TYPE.CORS]
 
-if(corsList.length === 1 && corsList[0] === '*'){
+if(!corsList || (corsList.length === 1 && corsList[0] === '*')){
     app.use(cors());
 } else {
     const corsOptions = {
@@ -104,7 +104,7 @@ if(corsList.length === 1 && corsList[0] === '*'){
             if(corsList.indexOf(origin) !== -1){
                 callback(null, true);
             } else {
-                callback(new Error("Not Allowed Origin"));
+                console.error(`Not Allowed Origin:: ${origin}`)
             }
         }
     };
