@@ -30,8 +30,7 @@ export default class DBAccessor{
             const result = await conn.query("SELECT 1");
             console.log("Initialize Test Passed !");
         } catch (e) {
-            console.log("Can you see")
-            console.log("Error below");
+            console.log(`Fail to connect database:: [${dbInfo.user}]@${dbInfo.host}:${dbInfo.port}`);
             console.log(e.message);
             if(e.message.toString().includes("retrieve connection from pool timeout after")){
                 console.error("Fail to connect to the Database. Please check [/app/configs/controller/default.json]");

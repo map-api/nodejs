@@ -1,9 +1,7 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import cors from 'cors';
 
-//import homeRouter from './routes/home/index.js';
 var app = express();
 
 import { fileURLToPath } from 'url';
@@ -18,6 +16,7 @@ import e from 'express';
 import JwtHandler from './middleware/auth/jwtHandler.js';
 import FileTransferConfigReader from './core/fileTransferReader.js';
 import API_TYPE from './core/enum/apiType.js';
+import NullOrUndefinedException from './exception/nullOrUndefinedException.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,12 +30,6 @@ app.use(express.static(path.join(__dirname)));
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-
-// homeRouter 연결
-// app.use('/', homeRouter);
-
-// app.use('/img', express.static(path.join(__dirname, 'public', 'img')));
-
 
 let apiConfigReader = new ApiConfigReader();
 let ftpConfigReader = new FileTransferConfigReader();
@@ -71,6 +64,27 @@ proxyWorker = new ProxyWorker(
 
 await proxyWorker.doTask();
 
+const corsList = baseConfigReader.getConfig()[API_TYPE.CORS]
+if(!corsList.origin || !corsList.default || !corsList.methods || !corsList['allow-headers']){
+    throw new NullOrUndefinedException(
+        `Cannot find CORS setting in default.json. ${corsList}:: origin, default, methods, allow-headers must be defined.`
+    );
+}
+
+if(corsList.origin.length !== 1 && !corsList.origin.includes(corsList.default)){
+    corsList.origin.push(corsList.default);
+}
+
+app.all('*', function(req, res, next) {
+    const origin = corsList.origin.includes(req.header('origin').toLowerCase()) ? req.headers.origin : corsList.default;
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Methods", corsList.methods);
+    res.header("Access-Control-Allow-Headers", corsList['allow-headers']);
+
+    next();
+});
+
+
 //API 처리를 위한 HTTP Router 설정
 apiConfigReader.setRouter(app);
 
@@ -92,25 +106,6 @@ dba.delete('test2', {
     'title': 31
 });
 */
-
-
-const corsList = baseConfigReader.getConfig()[API_TYPE.CORS]
-
-if(!corsList || (corsList.length === 1 && corsList[0] === '*')){
-    app.use(cors());
-} else {
-    const corsOptions = {
-        origin: function(origin, callback){
-            if(corsList.indexOf(origin) !== -1){
-                callback(null, true);
-            } else {
-                console.error(`Not Allowed Origin:: ${origin}`)
-            }
-        }
-    };
-    
-    app.use(cors(corsOptions));
-}
 
 if(jwtObject.use){
     app.post(jwtObject['generate-uri'], async (req, res) => {

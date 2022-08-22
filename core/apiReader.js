@@ -89,6 +89,7 @@ export default class ApiConfigReader{
             let apiResponser = new ApiResponser(_configInfo);
             return apiResponser.get(req, res, next);         
             */
+           
             if(_configInfo.data.dml.indexOf('select') !== -1){
                 base_app.get(
                     _uri,
