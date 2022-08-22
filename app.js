@@ -71,8 +71,10 @@ if(!corsList.origin || !corsList.default || !corsList.methods || !corsList['allo
     );
 }
 
-if(corsList.origin.length !== 1 && !corsList.origin.includes(corsList.default)){
-    corsList.origin.push(corsList.default);
+if(corsList.origin.length === 1){
+    if(corsList.origin[0] !== '*' && !corsList.origin.includes(corsList.default)){
+        corsList.origin.push(corsList.default);
+    }
 }
 
 app.all('*', function(req, res, next) {
@@ -107,7 +109,7 @@ dba.delete('test2', {
 });
 */
 
-if(jwtObject.use){
+if(jwtObject.use === "yes"){
     app.post(jwtObject['generate-uri'], async (req, res) => {
         let body = req.body;
         let result = await dba.jwtAuthorize(
