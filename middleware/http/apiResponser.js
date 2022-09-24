@@ -63,6 +63,7 @@ export default class ApiResponser{
         }
 
         if(_requestConditions.length % 2 != 0){
+            console.log(`Condition must match follow rule: /key1/{value1}/key2/{value2}... but given condition is [${_requestConditions}]`)
             return {
                 code: 400
             };
@@ -78,6 +79,7 @@ export default class ApiResponser{
             
             for(let key in _condition){
                 if(!modelObject.data.columns[key]){
+                    console.log(`Model does not have the request column [${key}]`);
                     return {
                         code: 400
                     };
@@ -111,12 +113,14 @@ export default class ApiResponser{
 
         if( (_requestConditions.length === 1 && _requestConditions[0] === '') 
         ||  _requestConditions.length === 0){
+            console.log(`Condition for put data is not given`);
             return {
                 code: 400
             };
         }
 
         if(_requestConditions.length % 2 != 0){
+            console.log(`Condition must match follow rule: /key1/{value1}/key2/{value2}... but given condition is [${_requestConditions}]`)
             return {
                 code: 400
             };
@@ -132,6 +136,7 @@ export default class ApiResponser{
             
             for(let key in _condition){
                 if(!modelObject.data.columns[key]){
+                    console.log(`Model does not have the request column [${key}]`);
                     return {
                         code: 400
                     };
@@ -146,6 +151,7 @@ export default class ApiResponser{
 
         for(let key in body){
             if(!modelObject.data.columns[key]){
+                console.log(`Model does not have the request column [${key}]`);
                 return {
                     code: 400
                 };
@@ -156,6 +162,8 @@ export default class ApiResponser{
 
         for(let i = 0; i < modelObject.data.notNull.length; i++){
             if(!body[modelObject.data.notNull[i]]){
+                console.log(`Require column is null [${columnNotNull[i]}] and you sent`);
+                console.log(body);
                 return {
                     code: 400
                 };
@@ -186,6 +194,7 @@ export default class ApiResponser{
 
         for(let key in body){
             if(!modelObject.data.columns[key]){
+                console.log(`Model does not have the request column [${key}]`);
                 return {
                     code: 400
                 };
@@ -196,6 +205,8 @@ export default class ApiResponser{
 
         for(let i = 0; i < columnNotNull.length; i++){
             if(!body[columnNotNull[i]]){
+                console.log(`Require column is null [${columnNotNull[i]}] and you sent`);
+                console.log(body);
                 return {
                     code: 400
                 };

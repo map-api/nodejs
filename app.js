@@ -78,10 +78,21 @@ if(corsList.origin.length === 1){
 }
 
 app.all('*', function(req, res, next) {
-    const origin = corsList.origin.includes(req.header('origin').toLowerCase()) ? req.headers.origin : corsList.default;
+    let origin;
+    
+    try{
+        origin = corsList.origin.includes(req.headers.origin.toLowerCase()) ? req.headers.origin : corsList.default;
+    } catch (e) {
+        origin = corsList.default;
+    }
+
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Methods", corsList.methods);
     res.header("Access-Control-Allow-Headers", corsList['allow-headers']);
+
+    if(req.method === 'OPTIONS'){
+        return res.status(200).send();
+    }
 
     next();
 });
