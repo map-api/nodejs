@@ -5,7 +5,7 @@ import InvalidSqlInsertExecuteException from "../../../exception/InvalidSqlInser
 import { objectKeysToArray } from "../../../core/utils.js";
 import ModelConfigReader from "../../../core/modelReader.js";
 import ConfigReader from "../../../core/configReader.js";
-
+import HTTP_RESPONSE from '../../../core/enum/httpResponse.js';
 import firebaseConfig from '../../../configs/firestore.json' assert {type:"json"};
 
 
@@ -148,9 +148,6 @@ export default class FirestoreAccessor {
                 const qury=query(collection(db,collections),startAfter(last),limit(page_count));
 
                 const nextr =await getDocs(qury);
-             
-
-                
                 nextr.forEach((docs)=>{
                     const lists=Object.keys(docs.data());
                     let res={};
@@ -193,7 +190,7 @@ export default class FirestoreAccessor {
         }
      
 
-      /*Select 남은것  prev url-> next url전달하기*/
+      /*Select 남은것  prev url-> next url전달하기 page_num 주어졌을때 +-1 하면됨!!*/
 return result;
     }    
 
@@ -205,10 +202,6 @@ return result;
         );
     }
 
-    console.log("컬렉션");
-    console.log(collections);
-    console.log(fieldList);
-    console.log(valueList);
     let data_set={};
     var idx=0;
     fieldList.forEach((field)=>{
@@ -218,11 +211,9 @@ data_set[field]=valueList[idx];
 idx++;
 
     });
-    console.log(data_set);
     const db = getFirestore(this.firebase);
       
     const ref=collection(db,collections);
-   
     let result;
    let kk={};
     try{
@@ -239,8 +230,6 @@ idx++;
        
     });
     }catch(error){
-     // console.log(error+"firestore insert error");
-     console.log("에러남??");
       return {
         code: 400,
         message: "Request body failed validation",
@@ -264,10 +253,15 @@ return result;
             `ColumnList(${fieldList}) or DataList(${valueList}) is null. Or size of ColumnList and DataList are not match.`
         );
     }
-    //먼저 있는지확인
+    //먼저 있는지확인 -> ?몇개?
     //-> 있으면 값바꾸기
     //없으면 생성
     //get
+    //a-> a 10개바꿀거야?
+    //a-> a 10
+    //size:10
+
+    //delete -> 전부 다삭제
     console.log("필드리스트");
     console.log(fieldList);
     console.log(valueList);
@@ -280,9 +274,40 @@ return result;
     }
 
 
+    async delete(table, condition){
+
+      const queryConstraints = [];
+      for(let key in condition)
+      {
+      queryConstraints.push(where(key, '==', condition[key]));
+      }
+      const db = getFirestore(this.firebase);
+      const q = query(collection(db,table),...queryConstraints);
+
+      const querySnapshot = await getDocs(q);
+      var idx=querySnapshot.docs.length;
+
+      
+      querySnapshot.forEach((docs)=>{
+        
+        const ks=deleteDoc(doc(db,table, docs.id)).then((i)=>{
+
+  
+        }).catch((error)=>{
+          
+          return  {
+            code: 204,
+            message: HTTP_RESPONSE[204]
+        }
+        });
+         
+     
+      
+    });
+      return {code: 204,message: HTTP_RESPONSE[204]}; 
 
 
-
+  }
 }
   
 
