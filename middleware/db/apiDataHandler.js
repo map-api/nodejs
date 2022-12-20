@@ -26,9 +26,12 @@ export default class ApiDataHandler {
       dataList,
       modelObject
     );
+
+
     if (typeof result === "object" && result.code && result.code === 200) {
       return result;
     }
+  
 
     if (result.affectedRows) {
       let _result = null;
@@ -44,6 +47,14 @@ export default class ApiDataHandler {
       if (result.mysql) {
         _result = {
           _next_id_: Number(result.insertId),
+        };
+
+        return _result;
+      }
+      if(result.firestore)
+      {
+        _result = {
+          _next_id_: result.insertId,
         };
 
         return _result;

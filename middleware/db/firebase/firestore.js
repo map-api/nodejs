@@ -193,9 +193,92 @@ export default class FirestoreAccessor {
         }
      
 
-     
+      /*Select 남은것  prev url-> next url전달하기*/
 return result;
     }    
+
+    async insert(collections, fieldList, valueList, modelObject){
+
+      if(!fieldList || !valueList || (fieldList.length != valueList.length)){
+        throw new InvalidSqlInsertExecuteException(
+            `FieldList ${fieldList} or ValueList ${valueList} is null || Size of FieldList and ValueList are not match.`
+        );
+    }
+
+    console.log("컬렉션");
+    console.log(collections);
+    console.log(fieldList);
+    console.log(valueList);
+    let data_set={};
+    var idx=0;
+    fieldList.forEach((field)=>{
+
+      
+data_set[field]=valueList[idx];
+idx++;
+
+    });
+    console.log(data_set);
+    const db = getFirestore(this.firebase);
+      
+    const ref=collection(db,collections);
+   
+    let result;
+   let kk={};
+    try{
+         result=await addDoc(ref,data_set).then((e)=>{
+                   
+    const return_val={
+        code:201,
+        insertId: e.id,
+        affectedRows:1,
+        document:data_set,
+        firestore:true };
+
+        kk=return_val;
+       
+    });
+    }catch(error){
+     // console.log(error+"firestore insert error");
+     console.log("에러남??");
+      return {
+        code: 400,
+        message: "Request body failed validation",
+        success:false,
+        affectedRows:0
+      }
+    }
+ 
+    result=kk;
+
+return result;
+    
+    }
+  
+
+
+
+    async update(collection, fieldList, valueList, condition, modelObject,queryOption){
+      if(!fieldList || !valueList || (fieldList.length != valueList.length)){
+        throw new InvalidSqlInsertExecuteException(
+            `ColumnList(${fieldList}) or DataList(${valueList}) is null. Or size of ColumnList and DataList are not match.`
+        );
+    }
+    //먼저 있는지확인
+    //-> 있으면 값바꾸기
+    //없으면 생성
+    //get
+    console.log("필드리스트");
+    console.log(fieldList);
+    console.log(valueList);
+    console.log(condition);
+    console.log(modelObject);
+    console.log(queryOption);
+
+
+
+    }
+
 
 
 
