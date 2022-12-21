@@ -87,8 +87,7 @@ export default class ConfigReader{
                 }
 
                 for(let jdex in properties[index]){
-                    console.log((json[current_object[index]])[properties[index][jdex]]);
-                 
+                   
                     if(! (json[current_object[index]])[properties[index][jdex]] ){
                         throw new OutofConfigKeyException(
                             `Out of Key '${properties[index][jdex]}' for '${apiType.GENERAL}->${current_object[index]};' config file.`

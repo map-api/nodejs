@@ -208,6 +208,7 @@ export default class MongoAccessor {
             code: (result.upsertedCount === 1) ? 201 : 200,
             affectedRows: result.modifiedCount,
             acknowledged: result.acknowledged,
+            
             document: document,
             mongo: true
         }
